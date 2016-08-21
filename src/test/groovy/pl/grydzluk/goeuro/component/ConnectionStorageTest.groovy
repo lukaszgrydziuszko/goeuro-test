@@ -46,6 +46,124 @@ class ConnectionStorageTest extends Specification {
             testedObject.stationWithBusRouteMap.size() == 0
     }
 
+    def "Should limit loaded lines"() {
+        given:
+            String file = Utils.getFilePathFromResources("FileWithMoreLinesThanExpected.txt")
+
+        when:
+            def resultMap = testedObject.parseFileToStationWithBusRouteMap(file)
+
+        then:
+            resultMap.size() == 3
+    }
+
+    def "Should not add line cause not enough tokens"() {
+        given:
+            def line = "1 2"
+            def busRouteIds = ([] as Set)
+            def resultMap = [:]
+
+        when:
+            testedObject.processBusLine(line, busRouteIds, resultMap)
+
+        then:
+            busRouteIds.size() == 0
+            resultMap.size() == 0
+    }
+
+    def "Should not add line cause invalid bus route id"() {
+        given:
+            def line = "a 1 2 3"
+            def busRouteIds = ([] as Set)
+            def resultMap = [:]
+
+        when:
+            testedObject.processBusLine(line, busRouteIds, resultMap)
+
+        then:
+            busRouteIds.size() == 0
+            resultMap.size() == 0
+    }
+
+    def "Should add line"() {
+        given:
+        def line = "0 1 2 3"
+        def busRouteIds = ([] as Set)
+        def resultMap = [:]
+
+        when:
+        testedObject.processBusLine(line, busRouteIds, resultMap)
+
+        then:
+        busRouteIds.size() == 1
+        resultMap.size() == 3
+    }
+
+    def "Should skip station invalid id"() {
+        given:
+            def stationsTokenizer = new StringTokenizer("0 a 2 3")
+            def busRouteId = 1
+
+        when:
+            def stationIds = testedObject.convertToStationIdSet(stationsTokenizer, busRouteId)
+
+        then:
+            stationIds.size() == 3
+            stationIds.containsAll([0,2,3])
+    }
+
+    def "Should skip station id cause exists twice"() {
+        given:
+        def stationsTokenizer = new StringTokenizer("0 1 2 2")
+        def busRouteId = 1
+
+        when:
+        def stationIds = testedObject.convertToStationIdSet(stationsTokenizer, busRouteId)
+
+        then:
+        stationIds.size() == 3
+        stationIds.containsAll([0,1,2])
+    }
+
+    def "Should add all station ids"() {
+        given:
+            def stationsTokenizer = new StringTokenizer("0 1 2 3")
+            def busRouteId = 1
+
+        when:
+            def stationIds = testedObject.convertToStationIdSet(stationsTokenizer, busRouteId)
+
+        then:
+            stationIds.size() == 4
+            stationIds.containsAll([0,1,2,3])
+    }
+
+    def "Should add new stations to map"() {
+        given:
+            def stationIds = ([1,2,3] as Set)
+            def busRouteId = 0
+            def resultMap = [4:([1] as Set)]
+
+        when:
+            testedObject.fillResultMap(resultMap, busRouteId, stationIds)
+
+        then:
+            resultMap.size() == 4
+    }
+
+    def "Should not add new stations to map"() {
+        given:
+            def stationIds = ([1,2] as Set)
+            def busRouteId = 0
+            def resultMap = [1:([1] as Set), 2:([1] as Set)]
+
+        when:
+            testedObject.fillResultMap(resultMap, busRouteId, stationIds)
+
+        then:
+            resultMap.size() == 2
+    }
+
     def "Should return correct set of bus routes"() {
         given:
             Map map = Stub()
