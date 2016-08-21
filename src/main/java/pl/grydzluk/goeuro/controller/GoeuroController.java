@@ -19,7 +19,7 @@ public class GoeuroController {
     @Autowired
     ConnectionService connectionService;
 
-    @RequestMapping(value = "/provider/goeurobus/direct/{departureId}/{arrivalId}",
+    @RequestMapping(value = "/rest/provider/goeurobus/direct/{departureId}/{arrivalId}",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public @ResponseBody DirectResponseDto checkDirectConnection(@PathVariable(value="departureId") Integer departureId,
                                                                  @PathVariable(value="arrivalId") Integer arrivalId) {

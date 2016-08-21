@@ -23,7 +23,7 @@ import java.nio.file.Paths;
  * Created by luk on 2016-08-21.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = "run.arguments=\"C:/goeuro_test/test.txt\"", classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GoeuroControllerTest {
     @Autowired
     TestRestTemplate template;
@@ -50,7 +50,7 @@ public class GoeuroControllerTest {
         //given
 
         //when
-        ResponseEntity<DirectResponseDto> response = template.getForEntity("/provider/goeurobus/direct/1/2", DirectResponseDto.class);
+        ResponseEntity<DirectResponseDto> response = template.getForEntity("/rest/provider/goeurobus/direct/1/2", DirectResponseDto.class);
 
 
         //then
@@ -69,7 +69,7 @@ public class GoeuroControllerTest {
         //given
 
         //when
-        ResponseEntity<DirectResponseDto> response = template.getForEntity("/provider/goeurobus/direct/1/5", DirectResponseDto.class);
+        ResponseEntity<DirectResponseDto> response = template.getForEntity("/rest/provider/goeurobus/direct/1/5", DirectResponseDto.class);
 
 
         //then
